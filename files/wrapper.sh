@@ -42,12 +42,20 @@ if [ ! -f "$SERVER_EXE" ]; then
     exit 1
 fi
 
+export WINEPREFIX=/home/cubic/.wine
+unset WINEARCH
+export XDG_RUNTIME_DIR=/tmp/runtime-cubic
+mkdir -p "$XDG_RUNTIME_DIR"
+chmod 700 "$XDG_RUNTIME_DIR"
+
 echo "Using WINEPREFIX=$WINEPREFIX"
-echo "Using WINEARCH=$WINEARCH"
 which wine
-which wine64 || true
 wine --version
-wine64 --version || true
+
+echo "Initializing Wine prefix via Xvfb"
+rm -rf "$WINEPREFIX"
+xvfb-run -a --server-args="-screen 0 1280x1024x24 -nolisten tcp" wineboot -i
+wineserver -w
 
 echo "Starting Cubic Odyssey Dedicated Server via Xvfb and Wine"
 xvfb-run -a --server-args="-screen 0 1280x1024x24 -nolisten tcp" \

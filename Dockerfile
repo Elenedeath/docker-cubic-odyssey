@@ -13,10 +13,13 @@ ENV LC_ALL=en_US.UTF-8
 ENV WINEPREFIX=/home/cubic/.wine
 
 # Install wine, xvfb, cron, and xauth (required for xvfb-run)
-RUN apt-get update && \
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
         jq \
         wine \
+        wine32:i386 \
+        winbind \
         xvfb \
         xauth \
         cron \

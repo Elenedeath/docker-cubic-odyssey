@@ -78,6 +78,13 @@ rm -rf /tmp/.X11-unix > /dev/null 2>&1
 cd "$server_files" || exit 1
 echo "Starting Cubic Odyssey Dedicated Server"
 echo " "
+echo "Clean wine Folder"
+echo " "
+rm -rf /home/cubic/.wine
+export WINEPREFIX=/home/cubic/.wine
+export WINEARCH=win64
+wineboot -i
+wineserver -w
 echo "Launching wine Cubic Odyssey"
 echo " "
 source /home/cubic/scripts/wrapper.sh

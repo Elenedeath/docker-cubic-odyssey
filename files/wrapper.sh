@@ -42,9 +42,16 @@ if [ ! -f "$SERVER_EXE" ]; then
     exit 1
 fi
 
+echo "Using WINEPREFIX=$WINEPREFIX"
+echo "Using WINEARCH=$WINEARCH"
+which wine
+which wine64 || true
+wine --version
+wine64 --version || true
+
 echo "Starting Cubic Odyssey Dedicated Server via Xvfb and Wine"
 xvfb-run -a --server-args="-screen 0 1280x1024x24 -nolisten tcp" \
-    wine "$SERVER_EXE" -log 2>&1 &
+    wine64 "$SERVER_EXE" -log 2>&1 &
 wine_pid=$!
 
 # Handle unexpected exits

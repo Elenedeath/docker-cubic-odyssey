@@ -5,8 +5,6 @@ on:
     branches: [ main ]
     tags:
       - 'v*.*.*'
-  release:
-    types: [ published ]
 
 jobs:
   docker:
@@ -35,7 +33,6 @@ jobs:
             # Semver tags are generated only when a GitHub release with a
             # tag matching vX.Y.Z is published (e.g. v1.2.3 → 1.2.3)
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
 
       - name: Build & Push

@@ -6,10 +6,12 @@ VOLUME ["/home/cubic/server_files"]
 
 # Set environment variables
 ENV USER=cubic
-ENV HOME=/home/$USER
-ENV TZ='Europe/Berlin'
+ENV HOME=/home/cubic
+ENV TZ=Europe/Berlin
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
+ENV WINEPREFIX=/home/cubic/.wine
+ENV WINEARCH=win64
 
 # Install wine, xvfb, cron, and xauth (required for xvfb-run)
 RUN dpkg --add-architecture i386 && \
@@ -28,6 +30,8 @@ RUN dpkg --add-architecture i386 && \
         libvulkan1:i386 \
         mesa-vulkan-drivers \
         mesa-vulkan-drivers:i386 && \
+    sed -i 's/^# *en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen && \
     rm -rf /var/lib/apt/lists/*
 
 RUN echo 'export LC_ALL=$LC_ALL' >> /etc/profile.d/locale.sh && \

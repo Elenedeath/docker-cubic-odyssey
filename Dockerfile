@@ -23,7 +23,11 @@ RUN dpkg --add-architecture i386 && \
         cron \
         tzdata \
         locales \
-        sudo && \
+        sudo \
+        libvulkan1 \
+        libvulkan1:i386 \
+        mesa-vulkan-drivers \
+        mesa-vulkan-drivers:i386 && \
     rm -rf /var/lib/apt/lists/*
 
 RUN echo 'export LC_ALL=$LC_ALL' >> /etc/profile.d/locale.sh && \

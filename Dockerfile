@@ -11,7 +11,6 @@ ENV TZ=Europe/Berlin
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 ENV WINEPREFIX=/home/cubic/.wine
-ENV WINEARCH=win64
 
 # Install wine, xvfb, cron, and xauth (required for xvfb-run)
 RUN dpkg --add-architecture i386 && \

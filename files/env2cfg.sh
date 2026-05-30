@@ -1,6 +1,13 @@
 #!/bin/bash
 
 APP_FILE="$server_files/config/server_config.txt"
+TEMPLATE_FILE="$HOME/scripts/server_config.txt"
+
+mkdir -p "$(dirname "$APP_FILE")"
+
+if [ ! -f "$APP_FILE" ]; then
+    cp "$TEMPLATE_FILE" "$APP_FILE"
+fi
 
 variables=( 
     "GALAXY_SEED" "galaxySeed"

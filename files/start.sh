@@ -26,11 +26,20 @@ else
     steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir "$server_files" +login $STEAM_LOGIN $STEAM_PWD +app_update 3858450 validate +quit
 fi
 
-echo "steam_appid: "`cat $server_files/steam_appid.txt`
-echo " "
+if [ -n "$STEAM_LOGIN" ]; then
+    LOGIN_ARGS="+login $STEAM_LOGIN $STEAM_PWD"
+else
+    LOGIN_ARGS="+login anonymous"
+fi
+
+if [ -f "$server_files/steam_appid.txt" ]; then
+    echo "steam_appid: $(cat "$server_files/steam_appid.txt")"
+else
+    echo "steam_appid.txt not found yet"
+fi
 
 echo "Running setup script for the app.cfg file"
-source ./scripts/env2cfg.sh   
+source /home/cubic/scripts/env2cfg.sh 
 
 echo " "
 if [ -n "$NO_CRON" ]; then

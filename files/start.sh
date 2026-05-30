@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Location of server data and save data for docker
 
 server_files="/home/cubic/server_files"
@@ -82,7 +83,7 @@ echo "Clean wine Folder"
 echo " "
 rm -rf /home/cubic/.wine
 export WINEPREFIX=/home/cubic/.wine
-export WINEARCH=win64
+unset WINEARCH
 wineboot -i
 wineserver -w
 echo "Launching wine Cubic Odyssey"

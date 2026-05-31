@@ -13,7 +13,6 @@ else
     BACKUP_RETENTION=10
 fi
 
-echo "Checking if backup folder exists:"
 mkdir -p "${backup_folder}"
 
 if [[ ! -d "${loc_dir}" ]]; then
@@ -22,12 +21,10 @@ if [[ ! -d "${loc_dir}" ]]; then
 fi
 
 date_now="$(date '+%Y-%m-%d_%H-%M-%S')"
-echo "Creating new archive filename: $date_now"
+echo "Creating new archive filename: ${date_now}"
 archive_file="${backup_folder}/cubic_odyssey_backup-${date_now}.tar.gz"
 
-echo "Backing up current save files to $backup_folder/$archive_file"
 declare -a items_to_backup=()
-
 [[ -d "${loc_dir}/save" ]] && items_to_backup+=("save")
 [[ -f "${loc_dir}/continue_game.json" ]] && items_to_backup+=("continue_game.json")
 
@@ -36,21 +33,8 @@ if [[ ${#items_to_backup[@]} -eq 0 ]]; then
     exit 0
 fi
 
-echo "Backing up: ${items_to_backup[*]}"
-echo "Archive: ${archive_file}"
-date
-echo " "
-
+echo "Backing up current save files to ${archive_file}"
 tar -czvf "${archive_file}" -C "${loc_dir}" "${items_to_backup[@]}"
-
-echo " "
-echo "Backup finished"
-echo " "
-date
-
-echo " "
-echo "Keeping only the last $BACKUP_RETENTION backups"
-echo " "
 
 mapfile -t backups < <(
     find "${backup_folder}" -maxdepth 1 -type f -name 'cubic_odyssey_backup-*.tar.gz' -printf '%T@ %p\n' \
@@ -71,6 +55,5 @@ else
     echo "Found ${total_backups} backups. No deletion needed."
 fi
 
-echo
 echo "Current backups:"
 ls -lh "${backup_folder}"

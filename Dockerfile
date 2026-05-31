@@ -41,19 +41,9 @@ RUN getent group ${PGID} || groupadd -g ${PGID} ${USER} && \
 WORKDIR $HOME
 
 # Copy batch files and give execute rights
-COPY --chown=$USER:$USER ./files $HOME/scripts
-RUN chmod +x $HOME/scripts/*.sh
-
-USER $USER
+COPY ./files ${HOME}/scripts
+RUN chown -R ${USER}:${USER} ${HOME}/scripts && \
+    chmod +x ${HOME}/scripts/*.sh
 
 ENTRYPOINT ["/bin/bash", "/home/cubic/scripts/entrypoint.sh"]
 CMD ["/home/cubic/scripts/start.sh"]
-
-FROM base AS image-cron
-USER root
-# Setting up cron file for backup
-ADD --chown=$USER:$USER ./files/cubic-cron /etc/cron.d/cubic-cron
-RUN chmod 0644 /etc/cron.d/cubic-cron && \
-    crontab /etc/cron.d/cubic-cron && \
-    service cron start
-USER $USER

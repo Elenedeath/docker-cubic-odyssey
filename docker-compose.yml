@@ -13,25 +13,27 @@ services:
         chmod -R u+rwX /home/cubic/server_files /home/cubic/backups
     volumes:
       - cubic_server_files:/home/cubic/server_files
-      - C:\Users\hikag\Documents\Cubic-Test\backups:/home/cubic/backups
+      - "C:\\Users\\hikag\\Documents\\Cubic-Test\\backups:/home/cubic/backups"
 
   cubic:
     image: hikage/docker-cubic-odyssey:latest
     init: true
     tty: true
     stdin_open: true
-    user: "1001:1001"
+    stop_grace_period: 1m
     depends_on:
       init-permissions:
         condition: service_completed_successfully
     environment:
       STEAM_USER: "${STEAM_USER}"
       STEAM_PASS: "${STEAM_PASS}"
+      BACKUP_RETENTION: "10"
+      BACKUP_CRON_SCHEDULE: "0 * * * *"
     ports:
       - "27001-27015:27001-27015/udp"
     volumes:
       - cubic_server_files:/home/cubic/server_files
-      - C:\Users\hikag\Documents\Cubic-Test\backups:/home/cubic/backups
+      - "C:\\Users\\hikag\\Documents\\Cubic-Test\\backups:/home/cubic/backups"
 
 volumes:
   cubic_server_files:

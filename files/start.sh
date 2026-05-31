@@ -1,7 +1,7 @@
 #!/bin/bash
+# start.sh
 set -euo pipefail
 
-# Location of server data and save data for docker
 server_files="/home/cubic/server_files"
 
 echo " "
@@ -15,10 +15,10 @@ echo " "
 echo "Updating Cubic Odyssey Dedicated Server files..."
 echo " "
 
-if [ -n "${STEAM_USER:-}" ] && [ -n "${STEAM_PASS:-}" ]; then
-    LOGIN_ARGS="+login ${STEAM_USER} ${STEAM_PASS}"
+if [[ -n "${STEAM_USER:-}" && -n "${STEAM_PASS:-}" ]]; then
+    LOGIN_ARGS=(+login "${STEAM_USER}" "${STEAM_PASS}")
 else
-    LOGIN_ARGS="+login anonymous"
+    LOGIN_ARGS=(+login anonymous)
 fi
 
 steamcmd +login anonymous +quit || true
@@ -28,13 +28,13 @@ run_update() {
         +@ShutdownOnFailedCommand 1 \
         +@sSteamCmdForcePlatformType windows \
         +force_install_dir "$server_files" \
-        $LOGIN_ARGS \
+        "${LOGIN_ARGS[@]}" \
         "$@" \
         +quit
 }
 
-if [ -n "${BETANAME:-}" ]; then
-    if [ -n "${BETAPASSWORD:-}" ]; then
+if [[ -n "${BETANAME:-}" ]]; then
+    if [[ -n "${BETAPASSWORD:-}" ]]; then
         echo "Using beta $BETANAME with a password"
         update_cmd="+app_update 3858450 -beta $BETANAME -betapassword $BETAPASSWORD validate"
     else
@@ -54,7 +54,7 @@ for i in 1 2 3; do
     sleep 5
 done
 
-if [ -f "$server_files/steam_appid.txt" ]; then
+if [[ -f "$server_files/steam_appid.txt" ]]; then
     echo "steam_appid: $(cat "$server_files/steam_appid.txt")"
 else
     echo "steam_appid.txt not found yet"
@@ -63,11 +63,7 @@ fi
 echo "Running setup script for the app.cfg file"
 source /home/cubic/scripts/env2cfg.sh
 
-echo
-if [ -n "${NO_CRON:-}" ]; then
-    echo "No Cron image used!"
-fi
-
+echo " "
 cd "$server_files" || exit 1
 echo "Starting Cubic Odyssey Dedicated Server"
 echo " "

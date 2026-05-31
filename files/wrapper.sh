@@ -1,5 +1,5 @@
 #!/bin/bash
-# cubic-wrapper.sh
+# wrapper.sh
 set -euo pipefail
 
 echo "Starting Cubic Odyssey Dedicated Server via Xvfb and Wine"

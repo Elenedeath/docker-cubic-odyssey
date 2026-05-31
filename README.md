@@ -1,9 +1,9 @@
 # Cubic Odyssey Dedicated Server Docker Container 🏭
-[![Docker Hub](https://img.shields.io/badge/Docker_Hub-foundry-blue?logo=docker)](https://hub.docker.com/r/luxusburg/docker-cubic-odyssey)
-[![Docker Pulls](https://img.shields.io/docker/pulls/luxusburg/docker-cubic-odyssey)](https://hub.docker.com/r/luxusburg/docker-cubic-odyssey)
-[![Image Size](https://img.shields.io/docker/image-size/luxusburg/docker-cubic-odyssey/latest)](https://hub.docker.com/r/luxusburg/docker-cubic-odyssey/tags)
-[![Github](https://img.shields.io/badge/Github-foundry-blue?logo=github)](https://github.com/luxusburg/docker-cubic-odyssey)
-![GitHub last commit](https://img.shields.io/github/last-commit/luxusburg/docker-cubic-odyssey)
+[![Docker Hub](https://img.shields.io/badge/Docker_Hub-foundry-blue?logo=docker)](https://hub.docker.com/r/hikage/docker-cubic-odyssey)
+[![Docker Pulls](https://img.shields.io/docker/pulls/hikage/docker-cubic-odyssey)](https://hub.docker.com/r/hikage/docker-cubic-odyssey/)
+[![Image Size](https://img.shields.io/docker/image-size/hikage/docker-cubic-odyssey/latest)](https://hub.docker.com/r/hikage/docker-cubic-odyssey/tags)
+[![Github](https://img.shields.io/badge/Github-foundry-blue?logo=github)](https://github.com/elenedeath/docker-cubic-odyssey)
+![GitHub last commit](https://img.shields.io/github/last-commit/elenedeath/docker-cubic-odyssey)
 
 This Docker container simplifies hosting your own [Cubic Odyssey](https://cubicodyssey.game/en/) dedicated server. 🚀
 
@@ -60,7 +60,6 @@ The following examples will map `./server` (for game and save files) in your cur
 ```bash
 docker run -d \
     --name cubic-odyssey-server \
-    -p 3724:3724/udp \
     -p 27015:27015/udp \
     -v ./server:/home/cubic/server_files \    
     -e TZ="Europe/Paris" \
@@ -95,7 +94,7 @@ services:
     volumes:
       - ./server:/home/cubic/server_files:rw      
     ports:
-      - "27001:27001/udp"      
+      - "27015:27015/udp"      
     restart: unless-stopped
 ```
 

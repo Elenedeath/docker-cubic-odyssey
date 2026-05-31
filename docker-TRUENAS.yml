@@ -1,0 +1,38 @@
+services:
+  cubic:
+    depends_on:
+      init-permissions:
+        condition: service_completed_successfully
+    environment:
+      BACKUP_CRON_SCHEDULE: 0 * * * *
+      BACKUP_RETENTION: '10'
+      STEAM_PASS: PASSWORD
+      STEAM_USER: USER
+      TZ: Europe/Paris
+    image: hikage/docker-cubic-odyssey:latest
+    init: True
+    ports:
+      - 27015:27015/udp
+    stop_grace_period: 1m
+    volumes:
+      - >-
+        /mnt/.ix-apps/app_mounts/cubic-odyssey/server_files:/home/cubic/server_files
+      - /mnt/.ix-apps/app_mounts/cubic-odyssey/backups:/home/cubic/backups
+  init-permissions:
+    command:
+      - /bin/bash
+      - '-lc'
+      - |
+        mkdir -p /home/cubic/server_files/config
+        mkdir -p /home/cubic/server_files/server
+        mkdir -p /home/cubic/backups
+        mkdir -p /home/cubic/.steam
+        chown -R cubic:cubic /home/cubic
+        chmod -R u+rwX /home/cubic
+    entrypoint: []
+    image: hikage/docker-cubic-odyssey:latest
+    user: root
+    volumes:
+      - >-
+        /mnt/.ix-apps/app_mounts/cubic-odyssey/server_files:/home/cubic/server_files
+      - /mnt/.ix-apps/app_mounts/cubic-odyssey/backups:/home/cubic/backups

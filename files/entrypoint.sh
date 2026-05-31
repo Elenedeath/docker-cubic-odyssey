@@ -1,11 +1,25 @@
-#!/bin/bash
-# entrypoint.sh
+#!/usr/bin/env bash
 set -euo pipefail
 
-mkdir -p /home/cubic/server_files/config /home/cubic/server_files/server /home/cubic/backups /home/cubic/.steam
-chown -R cubic:cubic /home/cubic
-chmod -R u+rwX /home/cubic
+server_pid=""
 
-# start cron as root if needed here
+cleanup() {
+  echo "Shutdown signal received, stopping server..."
 
-exec su -s /bin/bash cubic -c '/home/cubic/scripts/start.sh'
+  if [[ -n "${server_pid}" ]] && kill -0 "${server_pid}" 2>/dev/null; then
+    kill -TERM "${server_pid}" 2>/dev/null || true
+    wait "${server_pid}" || true
+  fi
+
+  echo "Running final backup..."
+  /home/cubic/scripts/backup.sh || true
+
+  exit 0
+}
+
+trap cleanup SIGTERM SIGINT
+
+/bin/bash /home/cubic/scripts/start.sh &
+server_pid=$!
+
+wait "${server_pid}"

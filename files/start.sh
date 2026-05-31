@@ -9,7 +9,8 @@ echo "Server files location is set to : $server_files"
 echo " "
 
 mkdir -p /home/cubic/.steam
-chmod -R 777 /home/cubic/.steam 2>/dev/null || true
+chown -R cubic:cubic /home/cubic
+chmod -R u+rwX /home/cubic/.steam 2>/dev/null || true
 
 echo " "
 echo "Updating Cubic Odyssey Dedicated Server files..."
@@ -21,16 +22,16 @@ else
     LOGIN_ARGS=(+login anonymous)
 fi
 
-steamcmd +login anonymous +quit || true
+su -s /bin/bash cubic -c "steamcmd +login anonymous +quit" || true
 
 run_update() {
-    steamcmd \
+    su -s /bin/bash cubic -c "$(printf '%q ' steamcmd \
         +@ShutdownOnFailedCommand 1 \
         +@sSteamCmdForcePlatformType windows \
         +force_install_dir "$server_files" \
         "${LOGIN_ARGS[@]}" \
-        "$@" \
-        +quit
+        "$1" \
+        +quit)"
 }
 
 if [[ -n "${BETANAME:-}" ]]; then
@@ -70,4 +71,4 @@ echo " "
 echo "Launching wine Cubic Odyssey"
 echo " "
 
-exec /home/cubic/scripts/wrapper.sh
+exec su -s /bin/bash cubic -c "/home/cubic/scripts/wrapper.sh"

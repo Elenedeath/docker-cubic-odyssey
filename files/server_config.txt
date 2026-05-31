@@ -3,7 +3,7 @@ GameParams
 	m_server ServerParams
 	{
 		startingPort 27001
-		endingPort 27001
+		endingPort 27015
 		serverName "Luxusburg Docker Server"
 		serverPassword ""
 		maxPlayers 10

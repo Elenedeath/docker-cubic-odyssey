@@ -1,50 +1,58 @@
 #!/bin/bash
-set -e
-# Location of server data and save data for docker
+set -euo pipefail
 
+# Location of server data and save data for docker
 server_files="/home/cubic/server_files"
 
 echo " "
 echo "Server files location is set to : $server_files"
 echo " "
 
-mkdir -p /home/cubic/.steam 2>/dev/null
-chmod -R 777 /home/cubic/.steam 2>/dev/null
+mkdir -p /home/cubic/.steam
+chmod -R 777 /home/cubic/.steam 2>/dev/null || true
 
 echo " "
 echo "Updating Cubic Odyssey Dedicated Server files..."
 echo " "
 
-if [ -n "$STEAM_LOGIN" ]; then
-    LOGIN_ARGS="+login $STEAM_LOGIN $STEAM_PWD"
+if [ -n "${STEAM_USER:-}" ] && [ -n "${STEAM_PASS:-}" ]; then
+    LOGIN_ARGS="+login ${STEAM_USER} ${STEAM_PASS}"
 else
     LOGIN_ARGS="+login anonymous"
 fi
 
-if [ -n "$BETANAME" ]; then
-    if [ -n "$BETAPASSWORD" ]; then
+steamcmd +login anonymous +quit || true
+
+run_update() {
+    steamcmd \
+        +@ShutdownOnFailedCommand 1 \
+        +@sSteamCmdForcePlatformType windows \
+        +force_install_dir "$server_files" \
+        $LOGIN_ARGS \
+        "$@" \
+        +quit
+}
+
+if [ -n "${BETANAME:-}" ]; then
+    if [ -n "${BETAPASSWORD:-}" ]; then
         echo "Using beta $BETANAME with a password"
-        steamcmd +@sSteamCmdForcePlatformType windows \
-            +force_install_dir "$server_files" \
-            $LOGIN_ARGS \
-            +app_update "3858450 -beta $BETANAME -betapassword $BETAPASSWORD" validate \
-            +quit
+        update_cmd="+app_update 3858450 -beta $BETANAME -betapassword $BETAPASSWORD validate"
     else
         echo "Using beta $BETANAME without a password"
-        steamcmd +@sSteamCmdForcePlatformType windows \
-            +force_install_dir "$server_files" \
-            $LOGIN_ARGS \
-            +app_update "3858450 -beta $BETANAME" validate \
-            +quit
+        update_cmd="+app_update 3858450 -beta $BETANAME validate"
     fi
 else
     echo "No beta branch used."
-    steamcmd +@sSteamCmdForcePlatformType windows \
-        +force_install_dir "$server_files" \
-        $LOGIN_ARGS \
-        +app_update 3858450 validate \
-        +quit
+    update_cmd="+app_update 3858450 validate"
 fi
+
+for i in 1 2 3; do
+    if run_update "$update_cmd"; then
+        break
+    fi
+    echo "SteamCMD failed on attempt $i, retrying in 5s..."
+    sleep 5
+done
 
 if [ -f "$server_files/steam_appid.txt" ]; then
     echo "steam_appid: $(cat "$server_files/steam_appid.txt")"
@@ -55,30 +63,15 @@ fi
 echo "Running setup script for the app.cfg file"
 source /home/cubic/scripts/env2cfg.sh
 
-echo " "
-if [ -n "$NO_CRON" ]; then
+echo
+if [ -n "${NO_CRON:-}" ]; then
     echo "No Cron image used!"
-else
-    sudo -u root cron
-
-    if [ "$BACKUPS" = "false" ]; then
-        echo "[IMPORTANT] Backups are disabled!"
-        sudo -u root sed -i "/backup.sh/c # 0 * * * * /bin/bash /home/cubic/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
-    elif [ -n "$BACKUP_INTERVAL" ]; then
-        echo "Changing backup interval to $BACKUP_INTERVAL"
-        sudo -u root sed -i "/backup.sh/c $BACKUP_INTERVAL /bin/bash /home/cubic/scripts/backup.sh 2>&1" /var/spool/cron/crontabs/root
-    fi
 fi
-
-echo " "
-echo "Cleaning possible X11 leftovers"
-echo " "
-rm -f /tmp/.X*-lock > /dev/null 2>&1
-rm -rf /tmp/.X11-unix > /dev/null 2>&1
 
 cd "$server_files" || exit 1
 echo "Starting Cubic Odyssey Dedicated Server"
 echo " "
 echo "Launching wine Cubic Odyssey"
 echo " "
-source /home/cubic/scripts/wrapper.sh
+
+exec /home/cubic/scripts/wrapper.sh

@@ -48,6 +48,12 @@ export XDG_RUNTIME_DIR=/tmp/runtime-cubic
 mkdir -p "$XDG_RUNTIME_DIR"
 chmod 700 "$XDG_RUNTIME_DIR"
 
+if [ ! -d "$WINEPREFIX" ] || [ ! -f "$WINEPREFIX/system.reg" ]; then
+    echo "Initializing Wine prefix via Xvfb"
+    xvfb-run -a --server-args="-screen 0 1280x1024x24 -nolisten tcp" wineboot -i
+    wineserver -w
+fi
+
 echo "Using WINEPREFIX=$WINEPREFIX"
 which wine
 wine --version

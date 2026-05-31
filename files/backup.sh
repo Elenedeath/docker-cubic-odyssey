@@ -20,21 +20,16 @@ if [[ ! -d "${loc_dir}" ]]; then
     exit 1
 fi
 
-date_now="$(date '+%Y-%m-%d_%H-%M-%S')"
-echo "Creating new archive filename: ${date_now}"
-archive_file="${backup_folder}/cubic_odyssey_backup-${date_now}.tar.gz"
-
-declare -a items_to_backup=()
-[[ -d "${loc_dir}/save" ]] && items_to_backup+=("save")
-[[ -f "${loc_dir}/continue_game.json" ]] && items_to_backup+=("continue_game.json")
-
-if [[ ${#items_to_backup[@]} -eq 0 ]]; then
+if [[ -z "$(find "${loc_dir}" -mindepth 1 -print -quit)" ]]; then
     echo "[WARNING] Nothing to back up in ${loc_dir}"
     exit 0
 fi
 
-echo "Backing up current save files to ${archive_file}"
-tar -czvf "${archive_file}" -C "${loc_dir}" "${items_to_backup[@]}"
+date_now="$(date '+%Y-%m-%d_%H-%M-%S')"
+archive_file="${backup_folder}/cubic_odyssey_backup-${date_now}.tar.gz"
+
+echo "Creating backup: ${archive_file}"
+tar -czvf "${archive_file}" -C "${loc_dir}" .
 
 mapfile -t backups < <(
     find "${backup_folder}" -maxdepth 1 -type f -name 'cubic_odyssey_backup-*.tar.gz' -printf '%T@ %p\n' \

@@ -1,0 +1,37 @@
+services:
+  init-permissions:
+    image: cubicodyssey:latest
+    user: root
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        mkdir -p /home/cubic/server_files/config
+        mkdir -p /home/cubic/server_files/server
+        mkdir -p /home/cubic/backups
+        chown -R cubic:cubic /home/cubic/server_files /home/cubic/backups
+        chmod -R u+rwX /home/cubic/server_files /home/cubic/backups
+    volumes:
+      - cubic_server_files:/home/cubic/server_files
+      - C:\Users\hikag\Documents\Cubic-Test\backups:/home/cubic/backups
+
+  cubic:
+    image: cubicodyssey:latest
+    init: true
+    tty: true
+    stdin_open: true
+    user: "1001:1001"
+    depends_on:
+      init-permissions:
+        condition: service_completed_successfully
+    environment:
+      STEAM_USER: "${STEAM_USER}"
+      STEAM_PASS: "${STEAM_PASS}"
+    ports:
+      - "27001-27015:27001-27015/udp"
+    volumes:
+      - cubic_server_files:/home/cubic/server_files
+      - C:\Users\hikag\Documents\Cubic-Test\backups:/home/cubic/backups
+
+volumes:
+  cubic_server_files:

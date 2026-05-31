@@ -2,6 +2,7 @@ services:
   init-permissions:
     image: hikage/docker-cubic-odyssey:latest
     user: root
+    entrypoint: []
     command:
       - /bin/bash
       - -lc
@@ -9,8 +10,9 @@ services:
         mkdir -p /home/cubic/server_files/config
         mkdir -p /home/cubic/server_files/server
         mkdir -p /home/cubic/backups
-        chown -R cubic:cubic /home/cubic/server_files /home/cubic/backups
-        chmod -R u+rwX /home/cubic/server_files /home/cubic/backups
+        mkdir -p /home/cubic/.steam
+        chown -R cubic:cubic /home/cubic /home/cubic/server_files /home/cubic/backups /home/cubic/.steam
+        chmod -R u+rwX /home/cubic/server_files /home/cubic/backups /home/cubic/.steam
     volumes:
       - cubic_server_files:/home/cubic/server_files
       - "C:\\Users\\hikag\\Documents\\Cubic-Test\\backups:/home/cubic/backups"

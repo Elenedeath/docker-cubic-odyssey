@@ -1,6 +1,6 @@
 services:
   init-permissions:
-    image: cubicodyssey:latest
+    image: hikage/docker-cubic-odyssey:latest
     user: root
     command:
       - /bin/bash
@@ -16,7 +16,7 @@ services:
       - C:\Users\hikag\Documents\Cubic-Test\backups:/home/cubic/backups
 
   cubic:
-    image: cubicodyssey:latest
+    image: hikage/docker-cubic-odyssey:latest
     init: true
     tty: true
     stdin_open: true
